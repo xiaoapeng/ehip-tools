@@ -18,6 +18,8 @@
 
 extern void ehtools_ping(ehshell_cmd_context_t *cmd_context, int argc, const char *argv[]);
 extern void ehtools_ping_event(ehshell_cmd_context_t *cmd_context, enum ehshell_event ehshell_event);
+extern void ehtools_nslookup(ehshell_cmd_context_t *cmd_context, int argc, const char *argv[]);
+extern void ehtools_nslookup_event(ehshell_cmd_context_t *cmd_context, enum ehshell_event ehshell_event);
 
 static struct ehshell_command_info ehtools_command_info_tbl[] = {
 #ifdef CONFIG_PACKAGE_EHIP_TOOLS_PING
@@ -25,10 +27,20 @@ static struct ehshell_command_info ehtools_command_info_tbl[] = {
         .command = "ping",
         .description = "Ping command.",
         .usage = "ping -h show help",
-        .flags = 0,
+        .flags = EHSHELL_COMMAND_FLAG_RX_DISABLE,
         .do_function = ehtools_ping,
         .do_event_function = ehtools_ping_event
-    }
+    },
+#endif
+#ifdef CONFIG_PACKAGE_EHIP_TOOLS_NSLOOKUP
+    {
+        .command = "nslookup",
+        .description = "Nslookup command.",
+        .usage = "nslookup <domain> [A|CNAME]",
+        .flags = EHSHELL_COMMAND_FLAG_RX_DISABLE,
+        .do_function = ehtools_nslookup,
+        .do_event_function = ehtools_nslookup_event
+    },
 #endif
 };
 

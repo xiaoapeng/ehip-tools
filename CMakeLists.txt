@@ -11,6 +11,10 @@ if(CONFIG_PACKAGE_EHIP_TOOLS_PING)
     )
 endif()
 
-
+if(CONFIG_PACKAGE_EHIP_TOOLS_NSLOOKUP)
+    target_sources(ehip-tools PRIVATE
+        "${CMAKE_CURRENT_LIST_DIR}/src/cmd_nslookup.c"
+    )
+endif()
 
 target_link_libraries(ehip-tools PRIVATE eventhub ehip ehshell argparse)
