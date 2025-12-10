@@ -31,7 +31,7 @@ struct nslookup_context{
 
 static void nslookup_context_clean(ehshell_cmd_context_t *cmd_context){
     struct nslookup_context *ctx = (struct nslookup_context *)ehshell_command_get_user_data(cmd_context);
-    eh_signal_slot_disconnect_from_main(&signal_dns_table_changed, &ctx->slot_dns_table_changed);
+    eh_signal_slot_disconnect(&signal_dns_table_changed, &ctx->slot_dns_table_changed);
     eh_free(ctx);
 }
 
@@ -120,14 +120,15 @@ void ehtools_nslookup(ehshell_cmd_context_t *cmd_context, int argc, const char *
 help:
     eh_stream_printf(stream, "Usage: %s\r\n", ehshell_command_usage(cmd_context));
 error:
-    eh_free(ctx);
+    if(ctx)
+        eh_free(ctx);
 finish:
     ehshell_command_finish(cmd_context);
     return;
 }
 
 void ehtools_nslookup_event(ehshell_cmd_context_t *cmd_context, enum ehshell_event ehshell_event){
-    if(ehshell_event == EHSHELL_EVENT_SIGINT_REQUEST_QUIT){
+    if(ehshell_event & (EHSHELL_EVENT_SIGINT_REQUEST_QUIT | EHSHELL_EVENT_SHELL_EXIT)){
         nslookup_context_clean(cmd_context);
         ehshell_command_finish(cmd_context);
     }

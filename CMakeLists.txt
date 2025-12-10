@@ -17,4 +17,10 @@ if(CONFIG_PACKAGE_EHIP_TOOLS_NSLOOKUP)
     )
 endif()
 
+if(CONFIG_PACKAGE_EHIP_TOOLS_TELNET)
+    target_sources(ehip-tools PRIVATE
+        "${CMAKE_CURRENT_LIST_DIR}/src/cmd_telnet.c"
+    )
+endif()
+
 target_link_libraries(ehip-tools PRIVATE eventhub ehip ehshell argparse)

@@ -20,14 +20,16 @@ extern void ehtools_ping(ehshell_cmd_context_t *cmd_context, int argc, const cha
 extern void ehtools_ping_event(ehshell_cmd_context_t *cmd_context, enum ehshell_event ehshell_event);
 extern void ehtools_nslookup(ehshell_cmd_context_t *cmd_context, int argc, const char *argv[]);
 extern void ehtools_nslookup_event(ehshell_cmd_context_t *cmd_context, enum ehshell_event ehshell_event);
+extern void ehtools_telnet(ehshell_cmd_context_t *cmd_context, int argc, const char *argv[]);
+extern void ehtools_telnet_event(ehshell_cmd_context_t *cmd_context, enum ehshell_event ehshell_event);
 
 static struct ehshell_command_info ehtools_command_info_tbl[] = {
 #ifdef CONFIG_PACKAGE_EHIP_TOOLS_PING
     {
         .command = "ping",
         .description = "Ping command.",
-        .usage = "ping -h show help",
-        .flags = EHSHELL_COMMAND_FLAG_RX_DISABLE,
+        .usage = "ping <ip|domain>",
+        .flags = 0,
         .do_function = ehtools_ping,
         .do_event_function = ehtools_ping_event
     },
@@ -37,9 +39,19 @@ static struct ehshell_command_info ehtools_command_info_tbl[] = {
         .command = "nslookup",
         .description = "Nslookup command.",
         .usage = "nslookup <domain> [A|CNAME]",
-        .flags = EHSHELL_COMMAND_FLAG_RX_DISABLE,
+        .flags = 0,
         .do_function = ehtools_nslookup,
         .do_event_function = ehtools_nslookup_event
+    },
+#endif
+#ifdef CONFIG_PACKAGE_EHIP_TOOLS_TELNET
+    {
+        .command = "telnet",
+        .description = "Telnet command.",
+        .usage = "telnet <ip|domain> <port>",
+        .flags = EHSHELL_COMMAND_REDIRECT_INPUT,
+        .do_function = ehtools_telnet,
+        .do_event_function = ehtools_telnet_event
     },
 #endif
 };
