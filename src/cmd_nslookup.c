@@ -106,7 +106,7 @@ void ehtools_nslookup(ehshell_cmd_context_t *cmd_context, int argc, const char *
         eh_stream_printf(stream, "Memory allocation failed\r\n");
         goto finish;
     }
-    strncpy(ctx->domain, argv[1], EHIP_DNS_CNAME_RR_DOMAIN_LEN_MAX + 1);
+    strncpy(ctx->domain, argv[1], EHIP_DNS_CNAME_RR_DOMAIN_LEN_MAX);
     ctx->type = type;
     ctx->dns_desc = dns_desc;
     ehshell_command_set_user_data(cmd_context, ctx);
