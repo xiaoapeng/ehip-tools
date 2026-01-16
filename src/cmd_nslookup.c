@@ -22,12 +22,12 @@
 #include <ehip-protocol/dns.h>
 
 struct nslookup_context{
-    char       domain[EHIP_DNS_CNAME_RR_DOMAIN_LEN_MAX + 1];
     eh_signal_slot_t slot_dns_table_changed;
     int              dns_desc;
     uint32_t         type;
 };
 
+#define nslookup_context_get_domain(ctx) ((char*)((struct nslookup_context *)(ctx)+1))
 
 static void nslookup_context_clean(ehshell_cmd_context_t *cmd_context){
     struct nslookup_context *ctx = (struct nslookup_context *)ehshell_command_get_user_data(cmd_context);
@@ -50,13 +50,13 @@ static void slot_functhion_dns_table_changed(eh_event_t *e, void *slot_param){
     (void)  e;
     ehshell_cmd_context_t *cmd_context = (ehshell_cmd_context_t *)slot_param;
     struct nslookup_context *ctx = (struct nslookup_context *)ehshell_command_get_user_data(cmd_context);
-    struct dns_entry* entry = ehip_dns_find_entry(ctx->dns_desc, ctx->domain, ctx->type);
+    struct dns_entry* entry = ehip_dns_find_entry(ctx->dns_desc, nslookup_context_get_domain(ctx), ctx->type);
     struct stream_base *stream = ehshell_command_stream(cmd_context);
     int ret;
     ret = eh_ptr_to_error(entry);
     switch (ret) {
         case 0:
-            print_dns_entry(stream, entry, ctx->type, ctx->domain);
+            print_dns_entry(stream, entry, ctx->type, nslookup_context_get_domain(ctx));
             break;
         case EH_RET_AGAIN:
             return ;
@@ -77,6 +77,7 @@ void ehtools_nslookup(ehshell_cmd_context_t *cmd_context, int argc, const char *
     struct dns_entry* entry = NULL;
     struct stream_base *stream = ehshell_command_stream(cmd_context);
     int dns_desc, ret;
+    size_t domain_len;
     if(argc == 3){
         if(strcmp(argv[2], "A") == 0){
             type = EHIP_DNS_TYPE_A;
@@ -100,13 +101,14 @@ void ehtools_nslookup(ehshell_cmd_context_t *cmd_context, int argc, const char *
         print_dns_entry(stream, entry, type, argv[1]);
         goto finish;
     }
-
-    ctx = eh_malloc(sizeof(struct nslookup_context));
+    domain_len = strlen(argv[1]);
+    ctx = eh_malloc(sizeof(struct nslookup_context) + domain_len + 1);
     if(ctx == NULL){
         eh_stream_printf(stream, "Memory allocation failed\r\n");
         goto finish;
     }
-    strncpy(ctx->domain, argv[1], EHIP_DNS_CNAME_RR_DOMAIN_LEN_MAX);
+    strncpy(nslookup_context_get_domain(ctx), argv[1], domain_len);
+    nslookup_context_get_domain(ctx)[domain_len] = '\0';
     ctx->type = type;
     ctx->dns_desc = dns_desc;
     ehshell_command_set_user_data(cmd_context, ctx);
