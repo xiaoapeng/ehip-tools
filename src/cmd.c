@@ -58,11 +58,7 @@ static struct ehshell_command_info ehtools_command_info_tbl[] = {
 
 static int __init cmd_init(void){
     int ret;
-    if(!ehshell_default()){
-        eh_mwarnfl(TOOLS_CMD, "ehshell_default is NULL");
-        return 0;
-    }
-    ret = ehshell_register_commands(ehshell_default(), ehtools_command_info_tbl, EH_ARRAY_SIZE(ehtools_command_info_tbl));
+    ret = ehshell_register_commands(ehtools_command_info_tbl, EH_ARRAY_SIZE(ehtools_command_info_tbl));
     if(ret < 0){
         eh_errfl("ehshell_register_commands failed, ret = %d", ret);
         return ret;
@@ -70,5 +66,4 @@ static int __init cmd_init(void){
     return 0;
 }
 
-
-ehshell_module_default_command_export(cmd_init, NULL);
+ehshell_module_command_export(cmd_init, NULL);
