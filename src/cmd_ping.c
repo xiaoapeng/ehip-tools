@@ -11,6 +11,7 @@
 #include <eh_error.h>
 #include <eh_formatio.h>
 #include <eh_mem.h>
+#include <eh_comp_timer.h>
 #include <ehip_core.h>
 #include <ehip-ipv4/ip.h>
 #include <ehip-ipv4/ping.h>
@@ -40,7 +41,7 @@ static void ping_context_clean(ehshell_cmd_context_t *cmd_context){
         /* ping阶段 */
         struct ping_context *ctx = (struct ping_context *)ehshell_command_get_user_data(cmd_context);
         ping_pcb_t ping_pcb = ctx->ping_pcb;
-        eh_signal_slot_disconnect(&signal_ehip_timer_1s, &ctx->slot_1s_timer);
+        eh_signal_slot_disconnect(&signal_eh_comp_timer_1s, &ctx->slot_1s_timer);
         eh_free(ctx);
         ehip_ping_delete(ping_pcb);
     }else{
@@ -121,7 +122,7 @@ static int ehtools_ping_start(ehshell_cmd_context_t *cmd_context, ipv4_addr_t ip
     ehip_ping_set_timeout(ping_pcb, 100); // 100 * 100ms = 10s
     ctx->flags = 0;
     eh_signal_slot_init(&ctx->slot_1s_timer, slot_functhion_1s_timer, cmd_context);
-    ret = eh_signal_slot_connect_to_main(&signal_ehip_timer_1s, &ctx->slot_1s_timer);
+    ret = eh_signal_slot_connect_to_main(&signal_eh_comp_timer_1s, &ctx->slot_1s_timer);
     if(ret != 0){
         eh_stream_printf(stream, "The 1s timer signal slot connect failed. Error code: %d\r\n", ret);
         goto eh_signal_slot_connect_to_main_error;
