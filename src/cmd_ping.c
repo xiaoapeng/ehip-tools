@@ -36,17 +36,17 @@ struct ping_dns_context{
 #define  ping_dns_context_get_domain(ctx) ((char*)((struct ping_dns_context *)(ctx)+1))
 
 static void ping_context_clean(ehshell_cmd_context_t *cmd_context){
-    uint32_t *flags = (uint32_t *)ehshell_command_get_user_data(cmd_context);
+    uint32_t *flags = (uint32_t *)ehshell_command_get_userdata(cmd_context);
     if(*flags == 0){
         /* ping阶段 */
-        struct ping_context *ctx = (struct ping_context *)ehshell_command_get_user_data(cmd_context);
+        struct ping_context *ctx = (struct ping_context *)ehshell_command_get_userdata(cmd_context);
         ping_pcb_t ping_pcb = ctx->ping_pcb;
         eh_signal_slot_disconnect(&signal_eh_comp_timer_1s, &ctx->slot_1s_timer);
         eh_free(ctx);
         ehip_ping_delete(ping_pcb);
     }else{
         /* DNS阶段 */
-        struct ping_dns_context *ctx = (struct ping_dns_context *)ehshell_command_get_user_data(cmd_context);
+        struct ping_dns_context *ctx = (struct ping_dns_context *)ehshell_command_get_userdata(cmd_context);
         eh_signal_slot_disconnect(&signal_dns_table_changed, &ctx->slot_dns_table_changed);
         eh_free(ctx);
     }
@@ -56,7 +56,7 @@ static void ping_context_clean(ehshell_cmd_context_t *cmd_context){
 
 static void ping_error_callback(ping_pcb_t pcb, ipv4_addr_t addr, uint16_t seq, int erron){
     ehshell_cmd_context_t *cmd_context = (ehshell_cmd_context_t *)ehip_ping_get_userdata(pcb);
-    // struct ping_context *ctx = (struct ping_context *)ehshell_command_get_user_data(cmd_context);
+    // struct ping_context *ctx = (struct ping_context *)ehshell_command_get_userdata(cmd_context);
     struct stream_base *stream = ehshell_command_stream(cmd_context);
     if(erron == EHIP_RET_REDIRECTED) 
         return ;
@@ -83,7 +83,7 @@ static void slot_functhion_1s_timer(eh_event_t *e, void *slot_param){
     (void) e;
     int ret;
     ehshell_cmd_context_t *cmd_context = (ehshell_cmd_context_t *)slot_param;
-    struct ping_context *ctx = (struct ping_context *)ehshell_command_get_user_data(cmd_context);
+    struct ping_context *ctx = (struct ping_context *)ehshell_command_get_userdata(cmd_context);
     struct stream_base *stream = ehshell_command_stream(cmd_context);
     if(ehip_ping_has_active_request(ctx->ping_pcb)){
         return ;
@@ -115,7 +115,7 @@ static int ehtools_ping_start(ehshell_cmd_context_t *cmd_context, ipv4_addr_t ip
         goto eh_malloc_error;
     }
     ctx->ping_pcb = ping_pcb;
-    ehshell_command_set_user_data(cmd_context, ctx);
+    ehshell_command_set_userdata(cmd_context, ctx);
     ehip_ping_set_userdata(ping_pcb, cmd_context);
     ehip_ping_set_error_callback(ping_pcb, ping_error_callback);
     ehip_ping_set_response_callback(ping_pcb, ping_response_callback);
@@ -140,7 +140,7 @@ ehip_ping_any_new_error:
 static void slot_functhion_dns_table_changed(eh_event_t *e, void *slot_param){
     (void)  e;
     ehshell_cmd_context_t *cmd_context = (ehshell_cmd_context_t *)slot_param;
-    struct ping_dns_context *ctx = (struct ping_dns_context *)ehshell_command_get_user_data(cmd_context);
+    struct ping_dns_context *ctx = (struct ping_dns_context *)ehshell_command_get_userdata(cmd_context);
     struct dns_entry* entry = ehip_dns_find_entry(ctx->dns_desc, ping_dns_context_get_domain(ctx), EHIP_DNS_TYPE_A);
     struct stream_base *stream = ehshell_command_stream(cmd_context);
     int ret;
@@ -198,7 +198,7 @@ static int ehtools_ping_dns_start(ehshell_cmd_context_t *cmd_context, const char
     ctx->dns_desc = dns_desc;
     strncpy(ping_dns_context_get_domain(ctx), domain, domain_len);
     ping_dns_context_get_domain(ctx)[domain_len] = '\0';
-    ehshell_command_set_user_data(cmd_context, ctx);
+    ehshell_command_set_userdata(cmd_context, ctx);
     eh_signal_slot_init(&ctx->slot_dns_table_changed, slot_functhion_dns_table_changed, cmd_context);
     ret = eh_signal_slot_connect_to_main(&signal_dns_table_changed, &ctx->slot_dns_table_changed);
     if(ret != 0){

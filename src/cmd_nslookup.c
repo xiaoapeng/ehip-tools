@@ -30,7 +30,7 @@ struct nslookup_context{
 #define nslookup_context_get_domain(ctx) ((char*)((struct nslookup_context *)(ctx)+1))
 
 static void nslookup_context_clean(ehshell_cmd_context_t *cmd_context){
-    struct nslookup_context *ctx = (struct nslookup_context *)ehshell_command_get_user_data(cmd_context);
+    struct nslookup_context *ctx = (struct nslookup_context *)ehshell_command_get_userdata(cmd_context);
     eh_signal_slot_disconnect(&signal_dns_table_changed, &ctx->slot_dns_table_changed);
     eh_free(ctx);
 }
@@ -49,7 +49,7 @@ static void print_dns_entry(struct stream_base *stream, struct dns_entry* entry,
 static void slot_functhion_dns_table_changed(eh_event_t *e, void *slot_param){
     (void)  e;
     ehshell_cmd_context_t *cmd_context = (ehshell_cmd_context_t *)slot_param;
-    struct nslookup_context *ctx = (struct nslookup_context *)ehshell_command_get_user_data(cmd_context);
+    struct nslookup_context *ctx = (struct nslookup_context *)ehshell_command_get_userdata(cmd_context);
     struct dns_entry* entry = ehip_dns_find_entry(ctx->dns_desc, nslookup_context_get_domain(ctx), ctx->type);
     struct stream_base *stream = ehshell_command_stream(cmd_context);
     int ret;
@@ -111,7 +111,7 @@ void ehtools_nslookup(ehshell_cmd_context_t *cmd_context, int argc, const char *
     nslookup_context_get_domain(ctx)[domain_len] = '\0';
     ctx->type = type;
     ctx->dns_desc = dns_desc;
-    ehshell_command_set_user_data(cmd_context, ctx);
+    ehshell_command_set_userdata(cmd_context, ctx);
     eh_signal_slot_init(&ctx->slot_dns_table_changed, slot_functhion_dns_table_changed, cmd_context);
     ret = eh_signal_slot_connect_to_main(&signal_dns_table_changed, &ctx->slot_dns_table_changed);
     if(ret != 0){
