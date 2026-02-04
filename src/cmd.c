@@ -26,7 +26,6 @@ extern void ehtools_nslookup_event(ehshell_cmd_context_t *cmd_context, enum ehsh
 #endif
 #ifdef CONFIG_PACKAGE_EHIP_TOOLS_IFCONFIG
 extern void ehtools_ifconfig(ehshell_cmd_context_t *cmd_context, int argc, const char *argv[]);
-extern void ehtools_ifconfig_event(ehshell_cmd_context_t *cmd_context, enum ehshell_event ehshell_event);
 #endif
 
 #ifdef CONFIG_PACKAGE_EHIP_TOOLS_ROUTE
@@ -71,6 +70,16 @@ static struct ehshell_command_info ehtools_command_info_tbl[] = {
         .flags = 0,
         .do_function = ehtools_nslookup,
         .do_event_function = ehtools_nslookup_event
+    },
+#endif
+#ifdef CONFIG_PACKAGE_EHIP_TOOLS_IFCONFIG
+    {
+        .command = "ifconfig",
+        .description = "Network interface configuration command.",
+        .usage = "ifconfig [interface] [up|down] [ip] [netmask mask]",
+        .flags = 0,
+        .do_function = ehtools_ifconfig,
+        .do_event_function = NULL
     },
 #endif
 #ifdef CONFIG_PACKAGE_EHIP_TOOLS_TELNET
