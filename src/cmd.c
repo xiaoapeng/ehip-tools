@@ -33,6 +33,11 @@ extern void ehtools_route(ehshell_cmd_context_t *cmd_context, int argc, const ch
 extern void ehtools_route_event(ehshell_cmd_context_t *cmd_context, enum ehshell_event ehshell_event);
 #endif
 
+#ifdef CONFIG_PACKAGE_EHIP_TOOLS_TRACEROUTE
+extern void ehtools_traceroute(ehshell_cmd_context_t *cmd_context, int argc, const char *argv[]);
+extern void ehtools_traceroute_event(ehshell_cmd_context_t *cmd_context, enum ehshell_event ehshell_event);
+#endif
+
 #ifdef CONFIG_PACKAGE_EHIP_TOOLS_TELNET
 extern void ehtools_telnet(ehshell_cmd_context_t *cmd_context, int argc, const char *argv[]);
 extern void ehtools_telnet_event(ehshell_cmd_context_t *cmd_context, enum ehshell_event ehshell_event);
@@ -80,6 +85,26 @@ static struct ehshell_command_info ehtools_command_info_tbl[] = {
         .flags = 0,
         .do_function = ehtools_ifconfig,
         .do_event_function = NULL
+    },
+#endif
+#ifdef CONFIG_PACKAGE_EHIP_TOOLS_ROUTE
+    {
+        .command = "route",
+        .description = "Route table configuration command.",
+        .usage = "route [add|del <dst>/<mask> [gw <gw>] [dev <dev>] [metric <m>]]",
+        .flags = 0,
+        .do_function = ehtools_route,
+        .do_event_function = ehtools_route_event
+    },
+#endif
+#ifdef CONFIG_PACKAGE_EHIP_TOOLS_TRACEROUTE
+    {
+        .command = "traceroute",
+        .description = "Traceroute command.",
+        .usage = "traceroute <ip|domain> [max_ttl] [max_retry]",
+        .flags = 0,
+        .do_function = ehtools_traceroute,
+        .do_event_function = ehtools_traceroute_event
     },
 #endif
 #ifdef CONFIG_PACKAGE_EHIP_TOOLS_TELNET

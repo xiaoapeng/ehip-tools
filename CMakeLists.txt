@@ -35,6 +35,12 @@ if(CONFIG_PACKAGE_EHIP_TOOLS_ROUTE)
     )
 endif()
 
+if(CONFIG_PACKAGE_EHIP_TOOLS_TRACEROUTE)
+    target_sources(ehip-tools PRIVATE
+        "${CMAKE_CURRENT_LIST_DIR}/src/cmd_traceroute.c"
+    )
+endif()
+
 if(CONFIG_PACKAGE_EHIP_TOOLS_UDP_ECHO)
     target_sources(ehip-tools PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/src/cmd_udp_echo.c"
