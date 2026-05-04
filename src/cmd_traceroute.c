@@ -65,6 +65,7 @@ static void traceroute_cleanup(ehshell_cmd_context_t *cmd_context){
 }
 
 static void traceroute_error_callback(ping_pcb_t pcb, ipv4_addr_t addr, uint16_t seq, int erron){
+    (void)seq;
     ehshell_cmd_context_t *cmd_context = (ehshell_cmd_context_t *)ehip_ping_get_userdata(pcb);
     struct traceroute_context *ctx = (struct traceroute_context *)ehshell_command_get_userdata(cmd_context);
     struct stream_base *stream = ctx->stream;
@@ -95,6 +96,7 @@ static void traceroute_error_callback(ping_pcb_t pcb, ipv4_addr_t addr, uint16_t
 }
 
 static void traceroute_response_callback(ping_pcb_t pcb, ipv4_addr_t addr, uint16_t seq, uint8_t ttl, eh_clock_t time_ms){
+    (void)seq;
     ehshell_cmd_context_t *cmd_context = (ehshell_cmd_context_t *)ehip_ping_get_userdata(pcb);
     struct traceroute_context *ctx = (struct traceroute_context *)ehshell_command_get_userdata(cmd_context);
     struct stream_base *stream = ctx->stream;
